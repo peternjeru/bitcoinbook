@@ -402,7 +402,7 @@ By selecting the specific _parent_ block, indicated by the Previous Block Hash f
 c91c008c26e50763e9f548bb8b2fc323735f73577effbc55502c51eb4cc7cf2e
 ----
 
-Jing's mining node will then add a 4-byte timestamp, encoded as a Unix "epoch" timestamp, which is based on the number of seconds elapsed from January 1, 1970, midnight UTC/GMT. The time +1388185914+ is equal to Friday, 27 Dec 2013, 23:11:54 UTC/GMT.
+Jing's mining node will then add a 4-byte timestamp, encoded as a Unix "epoch" timestamp, which is based on the number of seconds elapsed since midnight UTC, Thursday, January 1, 1970. The time +1388185914+ is equal to Friday, December 27, 2013, 23:11:54 UTC.
 
 Jing's node then fills in the target, which defines the required Proof-of-Work to make this a valid block. The target is stored in the block as a "target bits" metric, which is a mantissa-exponent encoding of the target. The encoding has a 1-byte exponent, followed by a 3-byte mantissa (coefficient). In block 277,316, for example, the target bits value is +0x1903a30c+. The first part +0x19+ is a hexadecimal exponent, while the next part, +0x03a30c+, is the coefficient. The concept of a target is explained in <<target>> and the "target bits" representation is explained in <<target_bits>>.
 
@@ -494,7 +494,7 @@ To make a challenge out of this algorithm, let's set a target: find a phrase tha
 
 To give a simple analogy, imagine a game where players throw a pair of dice repeatedly, trying to throw less than a specified target. In the first round, the target is 12. Unless you throw double-six, you win. In the next round the target is 11. Players must throw 10 or less to win, again an easy task. Let's say a few rounds later the target is down to 5. Now, more than half the dice throws will exceed the target and therefore be invalid. It takes exponentially more dice throws to win, the lower the target gets. Eventually, when the target is 2 (the minimum possible), only one throw out of every 36, or 2% of them, will produce a winning result.
 
-From the perspective of an observer who knows that the target of the dice game is 2, if someone has succeeded in casting a winning throw it can be assumed that they attempted, on average, 36 throws. In other words, one can estimate the amount of work it takes to succeed from the difficulty imposed by the target. When the algorithm is a based on a deterministic function such as SHA256, the input itself constitutes _proof_ that a certain amount of _work_ was done to produce a result below the target. Hence, _Proof-of-Work_.
+From the perspective of an observer who knows that the target of the dice game is 2, if someone has succeeded in casting a winning throw it can be assumed that they attempted, on average, 36 throws. In other words, one can estimate the amount of work it takes to succeed from the difficulty imposed by the target. When the algorithm is based on a deterministic function such as SHA256, the input itself constitutes _proof_ that a certain amount of _work_ was done to produce a result below the target. Hence, _Proof-of-Work_.
 
 [TIP]
 ====
@@ -837,7 +837,7 @@ The following list shows the total hashing power of the bitcoin network, over th
 2009:: 0.5 MH/sec–8 MH/sec (16&#x00D7; growth)
 2010:: 8 MH/sec–116 GH/sec (14,500&#x00D7; growth)
 2011:: 116 GH/sec–9 TH/sec (78&#x00D7; growth)
-2012:: 9 TH/sec–23 TH/sec (2.5&#x00D7; growth)
+2012:: 9 TH/sec–23 TH/sec (2.56#x00D7; growth)
 2013:: 23 TH/sec–10 PH/sec (450&#x00D7; growth)
 2014:: 10 PH/sec–300 PH/sec (30&#x00D7; growth)
 2015:: 300 PH/sec-800 PH/sec (2.66&#x00D7; growth)
@@ -875,7 +875,7 @@ Let's look at a specific example. Assume a miner has purchased mining hardware w
 </ul>
 ++++
 
-...where 21240 is the number of blocks in four years. The miner has a 98% probability of finding a block over four years, based on the global hash rate at the beginning of the period.
+...where 210240 is the number of blocks in four years. The miner has a 98% probability of finding a block over four years, based on the global hash rate at the beginning of the period.
 
 If the miner does find a single block in that timeframe, the payout of 12.5 bitcoin, at approximately $1,000 per bitcoin, will result in a single payout of $12,500, which will produce a net profit of about $7,000. However, the chance of finding a block in a 4-year period depends on the miner's luck. He might find two blocks in 4 years and make a very large profit. Or he might not find a block for 5 years and suffer a bigger financial loss. Even worse, the difficulty of the bitcoin Proof-of-Work algorithm is likely to go up significantly over that period, at the current rate of growth of hashing power, meaning the miner has, at most, one year to break even before the hardware is effectively obsolete and must be replaced by more powerful mining hardware. If this miner participates in a mining pool, instead of waiting for a once-in-four-years $12,500 windfall, he will be able to earn approximately $50 to $60 per week. The regular payouts from a mining pool will help him amortize the cost of hardware and electricity over time without taking an enormous risk. The hardware will still be obsolete in one or two years and the risk is still high, but the revenue is at least regular and reliable over that period. Financially this only makes sense at very low electricity cost (less than 1 cent per kW-hour) and only at very large scale.
 

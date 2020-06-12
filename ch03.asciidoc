@@ -258,7 +258,7 @@ Using config file /home/ubuntu/.bitcoin/bitcoin.conf
 ...
 ----
 
-You can hit Ctrl-C to shut down the node once you determine the location of the config file. Usually the configuration file is inside the _.bitcoin_ data directory under your user's home directory. Open the configuration file in your preferred editor.
+You can hit Ctrl-C to shut down the node once you determine the location of the config file. Usually the configuration file is inside the _.bitcoin_ data directory under your user's home directory. It is not created automatically, but you can create a starter config file by copying and pasting from the <<#full_index_node>> example, below. You can create or modify the configuration file in your preferred editor.
 
 Bitcoin Core offers more than 100 configuration options that modify the behavior of the network node, the storage of the blockchain, and many other aspects of its operation. To see a listing of these options, run +bitcoind  --help+:
 
@@ -465,7 +465,7 @@ In the next sections we will demonstrate some very useful RPC commands and their
 
 ==== Getting Information on the Bitcoin Core Client Status
 
-((("Bitcoin Core", "Bitcoin Core API", "status information")))Bitcoin Core provides status reports on diffent modules through the JSON-RPC interface. The most important commands include +getblockchaininfo+, +getmempoolinfo+, +getnetworkinfo+ and +getwalletinfo+.
+((("Bitcoin Core", "Bitcoin Core API", "status information")))Bitcoin Core provides status reports on different modules through the JSON-RPC interface. The most important commands include +getblockchaininfo+, +getmempoolinfo+, +getnetworkinfo+ and +getwalletinfo+.
 
 Bitcoin's +getblockchaininfo+ RPC command was introduced earlier. The +getnetworkinfo+ command displays basic information about the status of the bitcoin network node. Use +bitcoin-cli+ to run it:
 
@@ -690,7 +690,7 @@ If you're implementing a JSON-RPC call in your own program, you can use a generi
 
 However, there are libraries in most every programming language that "wrap" the Bitcoin Core API in a way that makes this a lot simpler. We will use the +python-bitcoinlib+ library to simplify API access. Remember, this requires you to have a running Bitcoin Core instance, which will be used to make JSON-RPC calls.
 
-The Python script in <<rpc_example>> makes a simple +getblockchaininfo+ call and prints the +block+ parameter from the data returned by Bitcoin Core.
+The Python script in <<rpc_example>> makes a simple +getblockchaininfo+ call and prints the +blocks+ parameter from the data returned by Bitcoin Core.
 
 [[rpc_example]]
 .Running getblockchaininfo via Bitcoin Core's JSON-RPC API

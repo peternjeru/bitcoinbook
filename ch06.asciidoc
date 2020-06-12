@@ -304,29 +304,29 @@ Over time, the way transaction fees are calculated and the effect they have on t
 
 Fee estimation algorithms calculate the appropriate fee, based on capacity and the fees offered by "competing" transactions. These algorithms range from simplistic (average or median fee in the last block) to sophisticated (statistical analysis). They estimate the necessary fee (in satoshis per byte) that will give a transaction a high probability of being selected and included within a certain number of blocks. Most services offer users the option of choosing high, medium, or low priority fees. High priority means users pay higher fees but the transaction is likely to be included in the next block. Medium and low priority means users pay lower transaction fees but the transactions may take much longer to confirm.
 
-((("bitcoinfees (third-party service)")))Many wallet applications use third-party services for fee calculations. One popular service is https://bitcoinfees.21.co/[_https://bitcoinfees.21.co/_], which provides an API and a visual chart showing the fee in satoshi/byte for different priorities.
+((("bitcoinfees (third-party service)")))Many wallet applications use third-party services for fee calculations. One popular service is https://bitcoinfees.earn.com/[_https://bitcoinfees.earn.com/_], which provides an API and a visual chart showing the fee in satoshi/byte for different priorities.
 
 [TIP]
 ====
 ((("static fees")))((("fees", "static fees")))Static fees are no longer viable on the bitcoin network. Wallets that set static fees will produce a poor user experience as transactions will often get "stuck" and remain unconfirmed. Users who don't understand bitcoin transactions and fees are dismayed by "stuck" transactions because they think they've lost their money.
 ====
 
-The chart in <<bitcoinfees21co>> shows the real-time estimate of fees in 10 satoshi/byte increments and the expected confirmation time (in minutes and number of blocks) for transactions with fees in each range. For each fee range (e.g., 61&#x2013;70 satoshi/byte), two horizontal bars show the number of unconfirmed transactions (1405) and total number of transactions in the past 24 hours (102,975), with fees in that range. Based on the graph, the recommended high-priority fee at this time was 80 satoshi/byte, a fee likely to result in the transaction being mined in the very next block (zero block delay). For perspective, the median transaction size is 226 bytes, so the recommended fee for a transaction size would be 18,080 satoshis (0.00018080 BTC).
+The chart in <<bitcoinfeesearncom>> shows the real-time estimate of fees in 10 satoshi/byte increments and the expected confirmation time (in minutes and number of blocks) for transactions with fees in each range. For each fee range (e.g., 61&#x2013;70 satoshi/byte), two horizontal bars show the number of unconfirmed transactions (1405) and total number of transactions in the past 24 hours (102,975), with fees in that range. Based on the graph, the recommended high-priority fee at this time was 80 satoshi/byte, a fee likely to result in the transaction being mined in the very next block (zero block delay). For perspective, the median transaction size is 226 bytes, so the recommended fee for a transaction size would be 18,080 satoshis (0.00018080 BTC).
 
-The fee estimation data can be retrieved via a simple HTTP REST API, at https://bitcoinfees.21.co/api/v1/fees/recommended[https://bitcoinfees.21.co/api/v1/fees/recommended]. For example, on the command line using the +curl+ command:
+The fee estimation data can be retrieved via a simple HTTP REST API, at https://bitcoinfees.earn.com/api/v1/fees/recommended[https://bitcoinfees.earn.com/api/v1/fees/recommended]. For example, on the command line using the +curl+ command:
 
 .Using the fee estimation API
 ----
-$ curl https://bitcoinfees.21.co/api/v1/fees/recommended
+$ curl https://bitcoinfees.earn.com/api/v1/fees/recommended
 
 {"fastestFee":80,"halfHourFee":80,"hourFee":60}
 ----
 
 The API returns a JSON object with the current fee estimate for fastest confirmation (+fastestFee+), confirmation within three blocks (+halfHourFee+) and six blocks (+hourFee+), in satoshi per byte.
 
-[[bitcoinfees21co]]
-.Fee estimation service bitcoinfees.21.co
-image::images/mbc2_0602.png[Fee Estimation Service bitcoinfees.21.co]
+[[bitcoinfeesearncom]]
+.Fee estimation service bitcoinfees.earn.com
+image::images/mbc2_0602.png[Fee Estimation Service bitcoinfees.earn.com]
 
 ==== Adding Fees to Transactions
 
@@ -615,6 +615,12 @@ In addition, there is a modifier flag +SIGHASH_ANYONECANPAY+, which can be combi
 | SINGLE\|ANYONECANPAY | 0x83 | Signature applies to one input and the output with the same index number
 |=======================
 
+These flag combinations are summarized in <<sighash_combinations>>.
+
+[[sighash_combinations]]
+.Summary of different sighash combinations
+image::images/sighash_combinations.png["Summary of different SIGHASH flag combinations"]
+
 The way +SIGHASH+ flags are applied during signing and verification is that a copy of the transaction is made and certain fields within are truncated (set to zero length and emptied). The resulting transaction is serialized. The +SIGHASH+ flag is added to the end of the serialized transaction and the result is hashed. The hash itself is the "message" that is signed. Depending on which +SIGHASH+ flag is used, different parts of the transaction are truncated. The resulting hash depends on different subsets of the data in the transaction. By including the +SIGHASH+ as the last step before hashing, the signature commits the +SIGHASH+ type as well, so it can't be changed (e.g., by a miner).
 
 [NOTE]
@@ -650,7 +656,7 @@ The temporary key pair is based on a random number _k_, which is used as the tem
 
 From there, the algorithm calculates the _S_ value of the signature, such that:
 
-_S_ = __k__^-1^ (__Hash__(__m__) + __dA__ * __R__) _mod p_
+_S_ = __k__^-1^ (__Hash__(__m__) + __dA__ * __R__) _mod n_
 
 where:
 
@@ -658,7 +664,7 @@ where:
 * _R_ is the x coordinate of the ephemeral public key
 * _dA_ is the signing private key
 * _m_ is the transaction data
-* _p_ is the prime order of the elliptic curve
+* _n_ is the prime order of the elliptic curve
 
 Verification is the inverse of the signature generation function, using the _R_, _S_ values and the public key to calculate a value _P_, which is a point on the elliptic curve (the ephemeral public key used in signature creation):
 
@@ -707,7 +713,7 @@ Let's look again at how Alice's transaction was presented on a popular block exp
 .Alice's transaction to Bob's Cafe
 image::images/mbc2_0208.png["Alice Coffee Transaction"]
 
-On the left side of the transaction, the blockchain explorer shows Alice's bitcoin address as the "sender." In fact, this information is not in the transaction itself. When the blockchain explorer retrieved the transaction it also retrieved the previous transaction referenced in the input and extracted the first output from that older transaction. Within that output is a locking script that locks the UTXO to Alice's public key hash (a P2PKH script). The blockchain explorer extracted the public key hash and encoded it using Base58Check encoding to produce and display the bitcoin address that represents that public key.
+On the left side of the transaction, the blockchain explorer shows Alice's bitcoin address as the "sender." In fact, this information is not in the transaction itself. When the blockchain explorer references the transaction it also references the previous transaction associated with the input and extracted the first output from that older transaction. Within that output is a locking script that locks the UTXO to Alice's public key hash (a P2PKH script). The blockchain explorer extracted the public key hash and encoded it using Base58Check encoding to produce and display the bitcoin address that represents that public key.
 
 Similarly, on the right side, the blockchain explorer shows the two outputs; the first to Bob's bitcoin address and the second to Alice's bitcoin address (as change). Once again, to create these bitcoin addresses, the blockchain explorer extracted the locking script from each output, recognized it as a P2PKH script, and extracted the public-key-hash from within. Finally, the blockchain explorer reencoded that public key hash with Base58Check to produce and display the bitcoin addresses.
 
@@ -727,7 +733,7 @@ From the UTXO set, the blockchain explorer sums up the value of all unspent outp
 
 In order to produce this one image, with these two "balances," the blockchain explorer has to index and search through dozens, hundreds, or even hundreds of thousands of transactions.
 
-In summary, the information presented to users through wallet applications, blockchain explorers, and other bitcoin user interfaces is often composed of higher-level abstractions that are derived by searching many different transactions, inspecting their content, and manipulating the data contained within them. By presenting this simplistic view of bitcoin transactions that resemble bank checks from one sender to one recipient, these applications have to abstract a lot of underlying detail. They mostly focus on the common types of transactions: P2PKH with SIGHASH_ALL signatures on every input. Thus, while bitcoin applications can present more than 80% of all transactions in an easy-to-read manner, they are sometimes stumped by transactions that deviate from the norm. Transactions that contain more complex locking scripts, or different SIGHASH flags, or many inputs and outputs, demonstrate the simplicity and weakness of these abstractions.
+In summary, the information presented to users through wallet applications, blockchain explorers, and other bitcoin user interfaces is often composed of higher-level abstractions that are derived by searching many different transactions, inspecting their content, and manipulating the data contained within them. By presenting this simplistic view of bitcoin transactions that resemble bank checks from one sender to one recipient, these applications have to abstract a lot of underlying details. They mostly focus on the common types of transactions: P2PKH with SIGHASH_ALL signatures on every input. Thus, while bitcoin applications can present more than 80% of all transactions in an easy-to-read manner, they are sometimes stumped by transactions that deviate from the norm. Transactions that contain more complex locking scripts, or different SIGHASH flags, or many inputs and outputs, demonstrate the simplicity and weakness of these abstractions.
 
 Every day, hundreds of transactions that do not contain P2PKH outputs are confirmed on the blockchain. The blockchain explorers often present these with red warning messages saying they cannot decode an address. The following link contains the most recent "strange transactions" that were not fully decoded: https://blockchain.info/strange-transactions[].
 
